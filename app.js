@@ -579,7 +579,7 @@
         <div class="fm-caps">${FILM.map((c, i) => `<article class="fm-cap${i ? '' : ' on'}" data-i="${i}">
           <p class="eyebrow"><span class="zh">${c.zh}</span> ${pad2(i + 1)} · ${c.z}</p>
           <h2 class="fm-t">${c.t}</h2>
-          <p class="fm-see">${c.see.replace('le terme en cours', `le terme en cours, ${t.cur[0]} (${t.cur[1].toLowerCase()})`)}</p>
+          <p class="fm-see">${c.see.replace('du terme en cours', `du terme en cours, ${t.cur[0]} (${t.cur[1].toLowerCase()})`)}</p>
           <dl class="fm-why">${c.why.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
         </article>`).join('')}</div>
         <ol class="fm-rail" aria-label="Les plans de la visite">${FILM.map((c, i) => `<li><button type="button" data-ch="${i}" class="${i ? '' : 'on'}" aria-label="${pad2(i + 1)} · ${esc(c.t)}"><span class="zh">${c.zh}</span><em>${c.t}</em></button></li>`).join('')}</ol>
@@ -988,7 +988,7 @@
     const cdn = 'https://cdn.jsdelivr.net/npm/three@0.147.0/';
     if (!window.THREE) await loadJS(cdn + 'build/three.min.js');
     if (!window.THREE.RoomEnvironment) await loadJS(cdn + 'examples/js/environments/RoomEnvironment.js');
-    if (!window.YSMaison) await loadJS('maison3d.js?v=1790783495');
+    if (!window.YSMaison) await loadJS('maison3d.js?v=1790784006');
   }
   let filmKill = null;
   function film(root) {
