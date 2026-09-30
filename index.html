@@ -1,0 +1,87 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex, nofollow"></head><body><title>Yue Sai · La Maison</title>
+<meta name="description" content="Yue Sai, maison de beauté chinoise : quatre rituels qui suivent les douze heures chinoises. Concept étudiant.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@300;400;500;600&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=IBM+Plex+Mono:wght@400;500&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+
+<div id="grain" aria-hidden="true"></div>
+
+<div id="gate" role="dialog" aria-modal="true" aria-label="Entrée de la Maison des Heures">
+  <div class="g-top">
+    <p class="eyebrow">Maison de beauté chinoise · depuis 1992</p>
+    <p class="eyebrow">Concept étudiant · site fictif</p>
+  </div>
+  <div class="g-mid">
+    <span class="seal big" aria-hidden="true">羽西</span>
+    <p class="g-word">YUE SAI</p>
+    <p class="g-sub">La Maison des Heures</p>
+    <button class="btn g-enter" type="button">Entrer<span class="arr"></span></button>
+  </div>
+  <div class="g-bot">
+    <p class="g-count" aria-hidden="true">000</p>
+    <div class="g-hour"></div>
+  </div>
+  <span class="g-bar" aria-hidden="true"></span>
+</div>
+
+<div id="door" hidden aria-hidden="true"><img alt=""></div>
+<div class="veils" aria-hidden="true"><i></i><i></i><i data-zh=""></i></div>
+
+<header class="nav">
+  <div class="n-left">
+    <button class="n-menu" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
+    <a class="ul n-heures" href="#heure-chen" data-nav="heure">Les heures</a>
+    <a class="ul" href="#collection" data-nav="collection">Collection</a>
+    <a class="ul" href="#lieux" data-nav="lieux">Lieux</a>
+    <a class="ul" href="#maison" data-nav="maison">Maison</a>
+  </div>
+  <a class="n-word" href="#" aria-label="Yue Sai, accueil"><span class="seal" aria-hidden="true">羽西</span>YUE SAI</a>
+  <div class="n-right">
+    <a class="ul n-cercle" href="#cercle" data-nav="cercle">Cercle</a>
+    <span class="n-hour" data-clock></span>
+    <button class="n-bag" type="button" data-open-bag>Panier (<b data-bag-count>0</b>)</button>
+  </div>
+</header>
+
+<div id="menu" hidden>
+  <nav aria-label="Menu principal">
+    <a href="#">Accueil <span class="zh">羽西</span></a>
+    <a href="#collection">La collection <span class="zh">物</span></a>
+    <a href="#lieux">Les Lieux du Temps <span class="zh">地</span></a>
+    <a href="#maison">La Maison <span class="zh">门</span></a>
+    <a href="#cercle">Le Cercle <span class="zh">圈</span></a>
+    <a href="#matieres">Les matières <span class="zh">材</span></a>
+    <a href="#carnet">Le Carnet des Heures <span class="zh">册</span></a>
+  </nav>
+  <div class="m-hours">
+    <a href="#heure-chen"><span class="brush">晨</span><span class="eyebrow">Éveil</span></a>
+    <a href="#heure-wu"><span class="brush">午</span><span class="eyebrow">Recharge</span></a>
+    <a href="#heure-mu"><span class="brush">暮</span><span class="eyebrow">Dénouer</span></a>
+    <a href="#heure-ye"><span class="brush">夜</span><span class="eyebrow">Réparer</span></a>
+  </div>
+</div>
+
+<main id="view"></main>
+
+<aside id="bag" hidden aria-label="Panier">
+  <div class="b-shade"></div>
+  <div class="b-panel" role="dialog" aria-modal="true" aria-labelledby="bag-t">
+    <div class="b-head"><p class="h3" id="bag-t">Panier</p><button class="b-close ul" type="button">Fermer</button></div>
+    <div class="b-list"></div>
+    <div class="b-foot"></div>
+  </div>
+</aside>
+
+<div id="zoom" hidden><img alt=""></div>
+<div class="peek" aria-hidden="true"><img alt=""></div>
+<div id="cursor" aria-hidden="true"><span></span></div>
+<div class="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="imgs.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body></html>
