@@ -203,7 +203,7 @@ window.YS = (function () {
     {
       slug: 'bougie-lieux', name: 'Bougie des Lieux', zh: '艾檀香氛蜡烛', m: 'mu', price: 58, vol: '220 g',
       tag: 'Armoise & santal',
-      desc: "L'odeur de nos Lieux du Temps : celle du hall, de la chambre et du bar de nos hôtels partenaires. On la retrouve chez soi, et un soir on la reconnaît ailleurs.",
+      desc: "L'odeur de nos Lieux du Temps le soir : l'armoise et le santal des bars partenaires. On la retrouve chez soi, et un soir on la reconnaît ailleurs.",
       options: [['Bougie 220 g', 58, 'céramique côtelée, 50 heures'], ['Recharge de cire', 34, 'on garde la céramique']],
       imgs: ['bougie-lieux', 'amb_46', 'amb_ex2'],
       ritual: ['Allumer une heure, pas plus.', 'Couper la mèche à cinq millimètres.', 'Éteindre avec le couvercle, jamais en soufflant.'],
@@ -290,12 +290,12 @@ window.YS = (function () {
       desc: "Les quatre rituels dans un coffret doré gaufré de racines de ginseng. À offrir pour la fête de la Mi-Automne, le Nouvel An, ou à soi-même.",
       options: [['Coffret doré', 248, 'gravure du prénom offerte'], ['Coffret découverte', 96, '4 formats voyage']],
       imgs: ['coffret-rituels_or', 'gamme_pierres', 'lieux_enveloppe'],
-      ritual: ['Essence Éveil 30 ml', 'Brume des Heures 50 ml', 'Huile Dénouer 150 ml', 'Essence Nuit Lingzhi 30 ml'],
+      ritual: ['Essence Éveil 30 ml', 'Brume des Heures 50 ml', 'Huile Dénouer 150 ml', 'Essence Or Cordyceps 30 ml'],
       formula: 'Le coffret contient quatre soins pleine taille et le Carnet des Heures personnalisé.',
       matiere: "Coffret doré gaufré, anse de cuir ; étui kraft et étiquette de papier xuan pour la version découverte.",
       freq: { win: [5, 29], how: 'Un rituel par moment', dose: '4 soins', dure: '≈ 3 mois' },
       sens: ['Toute la journée'],
-      stats: [['4', 'rituels'], ['−18 %', 'face aux soins séparés'], ['1', 'prénom gravé']],
+      stats: [['4', 'rituels'], ['254 €', 'les quatre soins achetés séparément'], ['1', 'prénom gravé']],
       pair: ['essence-or', 'encens-heures', 'coffret-7'],
     },
   ];

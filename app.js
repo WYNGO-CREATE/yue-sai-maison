@@ -308,7 +308,7 @@
         <div class="lt-text">
           <p class="eyebrow">Les Lieux du Temps</p>
           <h2 class="h2" data-split>On nous reconnaît <em>avant de nous lire</em>.</h2>
-          <p class="body-t">Dans nos hôtels, nos restaurants et nos bars partenaires, aucun logo : la même odeur d'armoise et de santal, la même porcelaine céladon, la même cuvette du pouce que sur nos flacons. Un soir, la cliente dit « ça sent comme là-bas ». L'achat a déjà eu lieu dans sa mémoire.</p>
+          <p class="body-t">Dans nos hôtels, nos restaurants et nos bars partenaires, aucun logo : nos odeurs, la même porcelaine céladon, la même cuvette du pouce que sur nos flacons. Un soir, la cliente dit « ça sent comme là-bas ». L'achat a déjà eu lieu dans sa mémoire.</p>
           <p><a class="btn" href="#lieux">Les Lieux du Temps<span class="arr"></span></a></p>
         </div>
         ${ltB ? `<div class="lt-b"><figure class="ph r34" data-clip>${im(ltB.img, ltB.lieu)}</figure><div class="stamp"><span>${ltB.lieu}</span><span class="mono">${ltB.t}</span></div></div>` : ''}
@@ -458,7 +458,7 @@
           <details><summary>Livraison et retours</summary><div class="a-body">Expédition sous 24 h, livraison en 48 h en Chine continentale et en 4 jours en Europe. Échantillons de l'heure glissés dans chaque enveloppe. Retours gratuits sous 30 jours, en Maison ou par coursier.</div></details>
         </div>
         <div class="stats">${p.stats.map((s) => `<div><b>${esc(s[0])}</b><span>${esc(s[1])}</span></div>`).join('')}</div>
-        ${p.stats.some((s) => /\*/.test(s[1])) ? '<p class="muted" style="font-size:11.5px">* Résultats illustratifs d’un concept étudiant, non issus d’études réelles.</p>' : ''}
+        ${p.stats.some((s) => /\*/.test(s[1])) ? '<p class="muted" style="font-size:11.5px">* Objectifs des études d’efficacité prévues (30 à 60 volontaires, 28 à 56 jours, panels asiatique et européen) : aucune allégation n’est affichée avant les résultats. Concept étudiant.</p>' : ''}
       </aside>
     </section>
     ${band ? `<section class="moment-band" data-over>
@@ -499,7 +499,7 @@
       why: [['Marque', "La laque et le cinabre sont les codes du flacon : on nous reconnaît avant de lire le nom."], ['Cliente', "Lin Xiaoyu découvre l'adresse sur Xiaohongshu. La façade doit être belle en photo et calme, comme ce qu'elle cherche : 从容, l'aisance tranquille."]] },
     { id: 'vitrine', zh: '瓶', t: 'Une vitrine, un seul objet', z: "L'arche de gauche",
       see: "Derrière la première arche, rien à vendre : la calebasse de l'Essence Or, seule sous une cloche de verre, dans un faisceau de lumière. La seconde arche est la porte, toujours ouverte.",
-      why: [['Produit', "La calebasse, 葫芦, est en Chine le symbole de la longévité. C'est notre produit phare, à 160 €."], ['Marque', "Une vitrine de musée plutôt qu'un linéaire : on sort de l'image de comptoir parmi d'autres qui a usé Yue Sai."]] },
+      why: [['Produit', "La calebasse, 葫芦, est en Chine le symbole de la longévité. C'est notre pièce de prestige, à 160 €."], ['Marque', "Une vitrine de musée plutôt qu'un linéaire : on sort de l'image de comptoir parmi d'autres qui a usé Yue Sai."]] },
     { id: 'seuil', zh: '节', t: 'Le seuil des 24 niches', z: 'Le vestibule · mur est',
       see: "Vingt-quatre niches de laque, une par terme solaire (节气). Une seule est allumée : celle du terme en cours. Elle abrite le soin de la saison.",
       why: [['Marque', "Le calendrier chinois devient un objet, pas un décor."], ['Cliente', "Tous les quinze jours, la niche change : une vraie raison de repasser. C'est aussi le rythme du Cercle, un message par terme et jamais après 22 h."]] },
@@ -514,13 +514,13 @@
       why: [['Cliente', "Lin déjeune d'un repas livré devant son écran : elle a dix minutes. Le bar est à l'entrée pour ce passage éclair."], ['Produit', "Brume à 21 €, baume à 19 € : les premiers achats, ceux qu'on offre et qu'on rachète vite."]] },
     { id: 'mu', zh: '暮', t: "L'alcôve du Dénouer", z: `À l'ouest, côté couchant · ${MOMENTS.mu.hours}`,
       see: "Un mur de rouges laqués, des bougies, l'encens, une coiffeuse ronde. L'heure où l'on se démaquille, où l'on se prépare à sortir, ou les deux.",
-      why: [['Produit', "L'Huile Dénouer, le Rouge 1992, la Bougie des Lieux et l'Encens des Quatre Heures."], ['Marque', "La même odeur d'armoise et de santal que dans nos hôtels et restaurants partenaires : le parfum relie la boutique au reste de sa vie."]] },
+      why: [['Produit', "L'Huile Dénouer, le Rouge 1992, la Bougie des Lieux et l'Encens des Quatre Heures."], ['Marque', "La même odeur d'armoise et de santal que dans nos bars partenaires, celle de la Bougie des Lieux : le parfum relie la boutique au reste de sa vie."]] },
     { id: 'fontaine', zh: '泉', t: 'La fontaine à recharges', z: 'Au nord-ouest',
       see: "Trois becs de laiton au-dessus d'une vasque d'eau. On rapporte son flacon, on repart avec la recharge, à −30 %. Les flacons abîmés sont refondus à Jingdezhen.",
       why: [['Marque', "Notre éthique, « ne pas prendre à la nature ce qu'on peut cultiver », se voit au lieu de s'écrire."], ['Cliente', "Une raison de revenir chaque mois. Chaque recharge est une visite, donc un conseil."]] },
     { id: 'ye', zh: '夜', t: "L'alcôve de la Réparation", z: `Au nord, lumière bleue · ${MOMENTS.ye.hours}`,
-      see: "La lumière devient basse et bleue. La calebasse de l'Essence Nuit, seule sous un faisceau ; les pots de porcelaine de Jingdezhen rangés comme chez un apothicaire.",
-      why: [['Cliente', "熬夜, les nuits volées : Lin reste sur ses écrans jusqu'à 1 h. Ce rituel répond à sa vraie douleur, la culpabilité de mal dormir."], ['Produit', "L'Essence Nuit Lingzhi et la Crème Porcelaine : le soir, le panier le plus élevé."]] },
+      see: "La lumière devient basse et bleue. La calebasse de l'Essence Or, seule sous un faisceau ; l'Essence Nuit et les pots de porcelaine de Jingdezhen rangés comme chez un apothicaire.",
+      why: [['Cliente', "熬夜, les nuits volées : Lin reste sur ses écrans jusqu'à 1 h. Ce rituel répond à sa vraie douleur, la culpabilité de mal dormir."], ['Produit', "L'Essence Nuit Lingzhi, la Crème Porcelaine et l'Essence Or : le soir, le panier le plus élevé."]] },
     { id: 'cabines', zh: '室', t: 'Le couloir des cabines', z: "Derrière l'alcôve du nord",
       see: "Un couloir d'arches de plâtre, trois cabines, des vasques de pierre. Le soin de saison dure 40 minutes et change à chaque terme solaire.",
       why: [['Cliente', "Le soin, c'est du temps rendu, le contraire du 内卷."], ['Marque', "C'est ici que l'efficacité se prouve sur la peau : 58,8 % des Chinoises choisissent d'abord sur les ingrédients."]] },
@@ -654,8 +654,8 @@
       <div><span class="h3">Shanghai</span><span class="mono muted">Anfu Lu · 2027</span></div>
       <div><span class="h3">Hangzhou</span><span class="mono muted">Hubin · 2028</span></div>
       <div><span class="h3">Chengdu</span><span class="mono muted">Taikoo Li · 2028</span></div>
-      <div><span class="h3">Paris</span><span class="mono muted">Saint-Germain-des-Prés · 2030</span></div>
-    </div><p class="muted" style="font-size:13px">Adresses et dates projetées dans le plan de développement ; puis soixante Comptoirs du Temps dans les grands magasins.</p></div></section>`;
+      <div><span class="h3">Paris</span><span class="mono muted">Galeries Lafayette 2030 · Saint-Germain 2031</span></div>
+    </div><p class="muted" style="font-size:13px">Adresses et dates projetées dans le plan de développement ; et soixante Comptoirs du Temps dès 2027, en grands magasins et à Hainan.</p></div></section>`;
   }
 
   function cercle() {
@@ -988,7 +988,7 @@
     const cdn = 'https://cdn.jsdelivr.net/npm/three@0.147.0/';
     if (!window.THREE) await loadJS(cdn + 'build/three.min.js');
     if (!window.THREE.RoomEnvironment) await loadJS(cdn + 'examples/js/environments/RoomEnvironment.js');
-    if (!window.YSMaison) await loadJS('maison3d.js?v=1790784006');
+    if (!window.YSMaison) await loadJS('maison3d.js?v=1790808841');
   }
   let filmKill = null;
   function film(root) {

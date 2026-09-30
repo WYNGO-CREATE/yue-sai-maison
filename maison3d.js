@@ -496,7 +496,7 @@ window.YSMaison = (function () {
     // 夜 au nord : la calebasse sous cloche, pots de porcelaine ; porte des cabines au fond
     const N = alcove('N', 0x8ea6ff, 'ye', 'creme-porcelaine_modele'); N.position.set(0, 0, Z0 - R + .05); add(N);
     add(cyl(.42, .48, 1.05, mats.stone, 0, .64, Z0 - R - 1.15, 48));
-    const ng = add(prodGourd(mats.ambLiq)); ng.position.set(0, 1.17, Z0 - R - 1.15); ng.scale.multiplyScalar(2);
+    const ng = add(prodGourd(mats.goldLiq));   // l'Essence Or, pièce de prestige du rituel 夜 ng.position.set(0, 1.17, Z0 - R - 1.15); ng.scale.multiplyScalar(2);
     const nsp = add(new T.SpotLight(0xffe7c2, 2.2, 6, .28, .6, 2)); nsp.position.set(0, 3.7, Z0 - R - 1.1); nsp.target = ng; lights.yeSpot = nsp;
     for (let r2 = 0; r2 < 2; r2++) for (let i = 0; i < 4; i++) { const o = r2 ? prodDropper('gold', 'nuit') : prodJar(); o.position.set(1.0 + i * .28, 1.09 + r2 * .42, Z0 - R - 2.36); add(o); }
     // couloir des cabines (derrière l'alcôve nord)
@@ -608,19 +608,23 @@ window.YSMaison = (function () {
     if (lastTs) { const dt = ts - lastTs; slow = slow * .95 + (dt > 26 ? 1 : 0) * .05; if (slow > .6 && dpr > .75) { dpr = Math.max(.75, dpr - .35); renderer.setPixelRatio(dpr); resize(); slow = 0; } }
     lastTs = ts;
     prog += (target - prog) * .075;
+    const lastIn = pose((ts - t0) / 1000, true);
+    renderer.render(scene, camera);
+    drawTags(Math.max(0, (lastIn - .75) * 4));
+  }
+  // place la caméra et les fondus pour la progression courante ; rend la part du fondu final
+  function pose(t, shift) {
     const u = uAt(Math.max(0, Math.min(1, prog)));
     const pos = path.getPoint(Math.min(1, u)), look = lookPath.getPoint(Math.min(1, u));
-    const t = (ts - t0) / 1000;
     pos.y += Math.sin(t * .6) * .012; look.x += Math.sin(t * .4) * .02;   // léger flottement de drone
     camera.position.copy(pos); camera.lookAt(look);
     // dernier chapitre : le plafond s'efface pour lire le plan
     const lastIn = Math.max(0, Math.min(1, (prog * (stops.length - 1) - (stops.length - 2) - .36) / .3));
     fades.forEach((f) => { if (f.key === 'roof' || f.key === 'shaft') { f.o.visible = lastIn < .98; if (f.o.material.transparent !== true) { f.o.material.transparent = true; } f.o.material.opacity = f.key === 'shaft' ? .16 * (1 - lastIn) : 1 - lastIn; } });
     // vue du ciel : le plan se décale pour laisser la place au texte (à droite sur écran large, en haut sur téléphone)
-    if (lastIn > 0 && vw) { const wide = vw / vh > 1.05; camera.setViewOffset(vw, vh, wide ? -lastIn * .17 * vw : 0, wide ? 0 : lastIn * .2 * vh, vw, vh); }
+    if (shift && lastIn > 0 && vw) { const wide = vw / vh > 1.05; camera.setViewOffset(vw, vh, wide ? -lastIn * .17 * vw : 0, wide ? 0 : lastIn * .2 * vh, vw, vh); }
     else if (camera.view && camera.view.enabled) camera.clearViewOffset();
-    renderer.render(scene, camera);
-    drawTags(Math.max(0, (lastIn - .75) * 4));
+    return lastIn;
   }
 
   function resize() {
@@ -669,7 +673,8 @@ window.YSMaison = (function () {
     scene && scene.traverse((o) => { if (o.geometry) o.geometry.dispose(); });
     renderer = scene = camera = null;
   }
+  function snapshot(q) { if (!renderer) return ''; prog = target; pose(0, false); renderer.render(scene, camera); return renderer.domElement.toDataURL('image/jpeg', q || .92); }
   function setProgress(p, snap) { target = Math.max(0, Math.min(1, p)); if (snap) prog = target; }
   function chapters() { return stops.map((s) => s.id); }
-  return { init, destroy, setActive, setProgress, setHour, chapterAt, chapters, get count() { return stops.length; } };
+  return { init, destroy, setActive, snapshot, setProgress, setHour, chapterAt, chapters, get count() { return stops.length; } };
 })();
