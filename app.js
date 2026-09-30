@@ -123,9 +123,42 @@
   }
 
   /* ---------- composants ---------- */
-  function ruler(active, ink) {
+  function ruler(active, ink, demo) {
     return `<nav class="ruler${ink ? ' ink' : ''}" aria-label="Les douze heures chinoises">${SHICHEN.map((s, i) =>
-      `<a href="#heure-${s.m}" class="${i === active ? 'now' : ''}" title="${s.zh}时 · ${pad2(s.start)} h – ${pad2((s.start + 2) % 24)} h · ${heureDu(s.animal)}"><span class="zh">${s.zh}</span><span class="mono">${pad2(s.start)}h</span></a>`).join('')}</nav>`;
+      demo
+        ? `<button type="button" data-hour="${i}" class="${i === active ? 'now' : ''}" aria-pressed="${i === active}" title="${s.zh}时 · ${pad2(s.start)} h – ${pad2((s.start + 2) % 24)} h · ${heureDu(s.animal)}"><span class="zh">${s.zh}</span><span class="mono">${pad2(s.start)}h</span></button>`
+        : `<a href="#heure-${s.m}" class="${i === active ? 'now' : ''}" title="${s.zh}时 · ${pad2(s.start)} h – ${pad2((s.start + 2) % 24)} h · ${heureDu(s.animal)}"><span class="zh">${s.zh}</span><span class="mono">${pad2(s.start)}h</span></a>`).join('')}</nav>`;
+  }
+
+  /* démonstration : l'accueil change avec l'heure choisie */
+  function heroAt(idx) {
+    const hero = $('.hero');
+    if (!hero) return;
+    const sc = SHICHEN[idx], M = MOMENTS[sc.m];
+    $$('[data-hour]', hero).forEach((b, i) => { b.classList.toggle('now', i === idx); b.setAttribute('aria-pressed', String(i === idx)); });
+    const swap = () => {
+      document.body.dataset.m = M.key;
+      const img = first([M.hero, ...M.gallery]);
+      const box = $('.h-img', hero);
+      box.innerHTML = im(img, `${M.fr} : ${M.line}`, 'data-hero');
+      $('.h-brush', hero).textContent = M.zh;
+      $('.h-top .eyebrow', hero).innerHTML = `${M.zh} ${M.fr} · ${M.hours} · <span class="zh">${sc.zh}时</span>, ${heureDu(sc.animal)}`;
+      const t = $('.h-title', hero);
+      t.removeAttribute('data-done');
+      t.innerHTML = `Il est l'heure de <em>${M.verb}</em>.`;
+      $('.lede', hero).textContent = `${M.line} Le rituel de ${quand[M.key]} tient en ${M.duree}.`;
+      const ctas = $$('.h-ctas a', hero);
+      ctas[0].setAttribute('href', '#heure-' + M.key); ctas[0].innerHTML = `Le rituel de ${quand[M.key]}<span class="arr"></span>`;
+      $('.h-prods', hero).innerHTML = `<span class="eyebrow">À cette heure</span>` + M.products.map((s) => `<a class="ul" href="#p-${s}">${BY[s].name}</a>`).join('<span aria-hidden="true">·</span>');
+      if (ANIM) {
+        split(t);
+        G.from($$('.w > span', t), { yPercent: 115, duration: 1, ease: 'expo.out', stagger: .035 });
+        G.fromTo($('.h-img img', hero), { scale: 1.08, opacity: 0 }, { scale: 1, opacity: 1, duration: 1.4, ease: 'expo.out' });
+        G.fromTo($('.h-brush', hero), { opacity: 0 }, { opacity: 1, duration: 1.2 });
+      }
+    };
+    if (ANIM) G.to($$('.h-img img, .h-title, .h-brush', hero), { opacity: 0, duration: .35, ease: 'sine.in', onComplete: () => { G.set($$('.h-title, .h-brush', hero), { opacity: 1 }); swap(); } });
+    else swap();
   }
   const cols = (n) => (n <= 4 ? n : n % 3 === 0 ? 3 : 4);
   function card(p, i) {
@@ -231,7 +264,9 @@
           <p class="lede">${M.line} Le rituel de ${quand[M.key]} tient en ${M.duree}.</p>
           <div class="h-ctas"><a class="btn light" href="#heure-${M.key}">Le rituel de ${quand[M.key]}<span class="arr"></span></a><a class="btn light" href="#collection">La collection</a></div>
         </div>
-        ${ruler(n.idx)}
+        <p class="h-prods"><span class="eyebrow">À cette heure</span>${M.products.map((s) => `<a class="ul" href="#p-${s}">${BY[s].name}</a>`).join('<span aria-hidden="true">·</span>')}</p>
+        ${ruler(n.idx, false, true)}
+        <p class="h-hint mono">Touchez une heure : la maison change avec elle.</p>
       </div>
     </section>
 
@@ -281,10 +316,17 @@
       </div>
     </section>
 
-    ${has('amb_6') ? `<section class="facade" data-over>
-      <div class="f-img">${im('amb_6', 'La façade laquée de la Maison des Heures, Shanghai', 'class="par" data-par="5"')}</div>
-      <div class="f-in"><p class="eyebrow" style="color:rgba(246,240,230,.8)">La Maison · Shanghai, Anfu Lu · 2027</p><h2 class="display l" data-split>Deux arches de laque. <em>Aucune enseigne.</em></h2><p class="lede" style="color:rgba(246,240,230,.9)">On entre parce que la lumière appelle, et l'on ressort avec un rituel écrit à la main.</p><p class="row"><a class="btn light" href="#ouverture">Entrer dans la Maison<span class="arr"></span></a></p></div>
-    </section>` : ''}
+    <section class="mteaser">
+      <div class="mt-in wrap">
+        <div class="mt-text">
+          <p class="eyebrow">La Maison des Heures · Shanghai, Anfu Lu · 2027</p>
+          <h2 class="display l" data-split>Une boutique qui tourne <em>avec le soleil</em>.</h2>
+          <p class="lede">晨 à l'est, 午 au sud, 暮 à l'ouest, 夜 au nord, autour d'un cadran solaire. Entrez comme un architecte filmerait son lieu : la rue, le seuil, les quatre heures, jusqu'à la caisse.</p>
+          <p class="row"><a class="btn light" href="#maison">Entrer dans la Maison · visite 3D<span class="arr"></span></a></p>
+        </div>
+        <figure class="mt-plan fplan">${planSVG('chine', n.m)}</figure>
+      </div>
+    </section>
 
     <section class="sec wrap">
       <div class="ring-wrap">
@@ -449,20 +491,156 @@
     <section class="sec-s wrap"><div class="stack" style="gap:18px;max-width:780px"><p class="eyebrow">Pourquoi sans logo</p><p class="h2">La marque entre par la mémoire sensorielle. Le jour où elle dit « ça sent comme là-bas », <em>l'achat est déjà gagné</em>.</p><p class="row"><a class="btn" href="#p-bougie-lieux">La Bougie des Lieux<span class="arr"></span></a><a class="btn" href="#p-encens-heures">L'Encens des Quatre Heures<span class="arr"></span></a></p></div></section>`;
   }
 
+  /* ---------- la Maison : visite filmée en 3D ---------- */
+  // chaque plan : ce que l'on voit, puis pourquoi (marque · produit · cliente)
+  const FILM = [
+    { id: 'rue', zh: '门', t: 'La rue, sans enseigne', z: 'Anfu Lu, Shanghai · la façade',
+      see: "Une villa de pierre claire de l'ancienne concession, deux arches de laque cinabre, une plaque 羽西 grande comme une main. Aucune enseigne lumineuse : le soir, c'est la lumière de l'intérieur qui appelle.",
+      why: [['Marque', "La laque et le cinabre sont les codes du flacon : on nous reconnaît avant de lire le nom."], ['Cliente', "Lin Xiaoyu découvre l'adresse sur Xiaohongshu. La façade doit être belle en photo et calme, comme ce qu'elle cherche : 从容, l'aisance tranquille."]] },
+    { id: 'vitrine', zh: '瓶', t: 'Une vitrine, un seul objet', z: "L'arche de gauche",
+      see: "Derrière la première arche, rien à vendre : la calebasse de l'Essence Or, seule sous une cloche de verre, dans un faisceau de lumière. La seconde arche est la porte, toujours ouverte.",
+      why: [['Produit', "La calebasse, 葫芦, est en Chine le symbole de la longévité. C'est notre produit phare, à 160 €."], ['Marque', "Une vitrine de musée plutôt qu'un linéaire : on sort de l'image de comptoir parmi d'autres qui a usé Yue Sai."]] },
+    { id: 'seuil', zh: '节', t: 'Le seuil des 24 niches', z: 'Le vestibule · mur est',
+      see: "Vingt-quatre niches de laque, une par terme solaire (节气). Une seule est allumée : celle du terme en cours. Elle abrite le soin de la saison.",
+      why: [['Marque', "Le calendrier chinois devient un objet, pas un décor."], ['Cliente', "Tous les quinze jours, la niche change : une vraie raison de repasser. C'est aussi le rythme du Cercle, un message par terme et jamais après 22 h."]] },
+    { id: 'rotonde', zh: '时', t: 'La rotonde et le cadran', z: "Le cœur · sous l'oculus",
+      see: "Une salle ronde laquée, un oculus ouvert sur le ciel et, au centre, un cadran solaire de pierre gravé des douze heures chinoises. L'ombre du style indique l'heure réelle.",
+      why: [['Marque', "顺时而美, « belle à l'heure qu'il est », devient un lieu. Le plan est une horloge : on s'y oriente comme dans une journée."], ['Cliente', "Le cadran sous la lumière du ciel est le point photo, le 打卡 que Lin publie. Notre publicité, et elle ne coûte rien."]] },
+    { id: 'chen', zh: '晨', t: "L'alcôve de l'Éveil", z: `À l'est, côté soleil levant · ${MOMENTS.chen.hours}`,
+      see: "Une vasque de pierre pour essayer la Mousse du Matin, puis l'Essence Éveil, l'Écran Urbain et le gua sha. Trois minutes, pas plus.",
+      why: [['Produit', "Chaque alcôve ne montre que les soins de son heure : quatre rituels au lieu de dix étapes."], ['Cliente', "Lin a des réunions dès 9 h. On lui montre un geste de trois minutes, pas une routine de plus."]] },
+    { id: 'wu', zh: '午', t: 'Le bar à brume', z: `Au sud, près de l'entrée · ${MOMENTS.wu.hours}`,
+      see: "Un comptoir laqué et un miroir rond cerclé de laiton : la Brume des Heures et le Baume des Mains, en libre essai, pour la pause de midi.",
+      why: [['Cliente', "Lin déjeune d'un repas livré devant son écran : elle a dix minutes. Le bar est à l'entrée pour ce passage éclair."], ['Produit', "Brume à 21 €, baume à 19 € : les premiers achats, ceux qu'on offre et qu'on rachète vite."]] },
+    { id: 'mu', zh: '暮', t: "L'alcôve du Dénouer", z: `À l'ouest, côté couchant · ${MOMENTS.mu.hours}`,
+      see: "Un mur de rouges laqués, des bougies, l'encens, une coiffeuse ronde. L'heure où l'on se démaquille, où l'on se prépare à sortir, ou les deux.",
+      why: [['Produit', "L'Huile Dénouer, le Rouge 1992, la Bougie des Lieux et l'Encens des Quatre Heures."], ['Marque', "La même odeur d'armoise et de santal que dans nos hôtels et restaurants partenaires : le parfum relie la boutique au reste de sa vie."]] },
+    { id: 'fontaine', zh: '泉', t: 'La fontaine à recharges', z: 'Au nord-ouest',
+      see: "Trois becs de laiton au-dessus d'une vasque d'eau. On rapporte son flacon, on repart avec la recharge, à −30 %. Les flacons abîmés sont refondus à Jingdezhen.",
+      why: [['Marque', "Notre éthique, « ne pas prendre à la nature ce qu'on peut cultiver », se voit au lieu de s'écrire."], ['Cliente', "Une raison de revenir chaque mois. Chaque recharge est une visite, donc un conseil."]] },
+    { id: 'ye', zh: '夜', t: "L'alcôve de la Réparation", z: `Au nord, lumière bleue · ${MOMENTS.ye.hours}`,
+      see: "La lumière devient basse et bleue. La calebasse de l'Essence Nuit, seule sous un faisceau ; les pots de porcelaine de Jingdezhen rangés comme chez un apothicaire.",
+      why: [['Cliente', "熬夜, les nuits volées : Lin reste sur ses écrans jusqu'à 1 h. Ce rituel répond à sa vraie douleur, la culpabilité de mal dormir."], ['Produit', "L'Essence Nuit Lingzhi et la Crème Porcelaine : le soir, le panier le plus élevé."]] },
+    { id: 'cabines', zh: '室', t: 'Le couloir des cabines', z: "Derrière l'alcôve du nord",
+      see: "Un couloir d'arches de plâtre, trois cabines, des vasques de pierre. Le soin de saison dure 40 minutes et change à chaque terme solaire.",
+      why: [['Cliente', "Le soin, c'est du temps rendu, le contraire du 内卷."], ['Marque', "C'est ici que l'efficacité se prouve sur la peau : 58,8 % des Chinoises choisissent d'abord sur les ingrédients."]] },
+    { id: 'diagnostic', zh: '诊', t: 'Le salon du diagnostic', z: 'Au nord-est · derrière le paravent',
+      see: "Un paravent de papier, deux fauteuils laqués, un thé servi dans le céladon, une lecture de peau sur tablette. Quinze minutes, offertes.",
+      why: [['Cliente', "On l'interroge d'abord sur son sommeil, sa saison et son rythme, pas sur ses rides."], ['Marque', "La preuve (lecture de peau, actifs) servie avec la culture (le thé, le calendrier). 35 % du budget va à l'expérience et au diagnostic."]] },
+    { id: 'caisse', zh: '印', t: 'La table du sceau : la caisse', z: 'Le vestibule, côté ouest',
+      see: "La caisse est une table de cinabre, pas un comptoir. On y paie, et l'on scelle au sceau rouge le Carnet des Heures écrit pour la cliente. Sacs de papier cinabre, coffret noué d'or.",
+      why: [['Marque', "Le sceau, 印, signe un engagement, comme au bas d'une œuvre."], ['Cliente', "Elle repart avec un objet à son nom, qu'elle photographie, et un programme heure par heure. Son entrée dans le Cercle commence ici."]] },
+    { id: 'plan', zh: '图', t: 'Vu du ciel : une journée', z: 'Le plan · 280 m²',
+      see: "D'en haut, tout se lit. On entre au sud, et la journée tourne avec le soleil : 晨 à l'est, 午 au sud, 暮 à l'ouest, 夜 au nord, autour du cadran.",
+      why: [['En un mot', "Chaque zone correspond à un produit, à un moment de la journée de Lin et à un service. On ne vend pas des produits : on vend le bon moment."]] },
+  ];
+  const HOURS3D = [['chen', '7 h'], ['wu', '13 h'], ['mu', '19 h'], ['ye', '1 h']];
+
+  /* plans des trois formats (dessin au trait) */
+  function planSVG(kind, m) {
+    const on = (k) => (k === m ? ' class="on"' : '');
+    if (kind === 'chine') return `<svg viewBox="0 0 220 240" role="img" aria-label="Plan de la Maison des Heures">
+      <rect x="98" y="4" width="24" height="27"/><rect x="88" y="31" width="44" height="26"${on('ye')}/>
+      <rect x="172" y="102" width="26" height="34"${on('chen')}/><rect x="22" y="102" width="26" height="34"${on('mu')}/>
+      <circle cx="110" cy="119" r="62"/><circle cx="110" cy="119" r="12" class="dial"/>
+      <rect x="64" y="157" width="28" height="9" transform="rotate(-36 78 161)"${on('wu')}/>
+      <rect x="66" y="181" width="88" height="46"/><path d="M78 227h20M122 227h20" class="gap"/>
+      <text x="110" y="45">夜</text><text x="185" y="119">晨</text><text x="35" y="119">暮</text><text x="48" y="160">午</text><text x="110" y="206">门</text></svg>`;
+    if (kind === 'paris') return `<svg viewBox="0 0 220 240" role="img" aria-label="Plan de la Maison de Saint-Germain">
+      <rect x="30" y="30" width="160" height="180"/><circle cx="110" cy="116" r="38" class="dash"/><circle cx="110" cy="116" r="16" class="dial"/>
+      <rect x="92" y="30" width="36" height="10"${on('ye')}/><rect x="180" y="98" width="10" height="36"${on('chen')}/><rect x="30" y="98" width="10" height="36"${on('mu')}/><rect x="50" y="170" width="36" height="10"${on('wu')}/>
+      <rect x="140" y="40" width="40" height="36"/><path d="M92 210h36" class="gap"/>
+      <text x="110" y="58">夜</text><text x="170" y="120">晨</text><text x="50" y="120">暮</text><text x="68" y="198">午</text><text x="160" y="62" class="s">soin</text></svg>`;
+    return `<svg viewBox="0 0 220 240" role="img" aria-label="Plan d'un Comptoir du Temps">
+      <circle cx="110" cy="120" r="78"/><circle cx="110" cy="120" r="46"/><circle cx="110" cy="120" r="14" class="dial"/>
+      <path d="M110 42v32M110 166v32M32 120h32M156 120h32"/>
+      <path d="M110 42A78 78 0 0 1 188 120H156A46 46 0 0 0 110 74Z"${on('chen')}/><path d="M188 120A78 78 0 0 1 110 198V166A46 46 0 0 0 156 120Z"${on('wu')}/>
+      <path d="M110 198A78 78 0 0 1 32 120H64A46 46 0 0 0 110 166Z"${on('mu')}/><path d="M32 120A78 78 0 0 1 110 42V74A46 46 0 0 0 64 120Z"${on('ye')}/>
+      <text x="146" y="86">晨</text><text x="146" y="160">午</text><text x="74" y="160">暮</text><text x="74" y="86">夜</text></svg>`;
+  }
+
   function maison() {
-    const frames = MAISON.filter((f) => has(f.img));
+    const n = now();
+    const t = term();
     return `
     <section class="page-head">
       <p class="eyebrow">La Maison des Heures · Shanghai, Anfu Lu · ouverture 2027</p>
-      <h1 class="display xl" data-split>On y entre <em>pour une heure</em>.</h1>
-      <p class="lede">Une boutique organisée comme une journée : l'Éveil à l'est, la Recharge au sud, le Dénouer à l'ouest, la Réparation au nord, autour d'un cadran solaire. La lumière suit l'heure réelle.</p>
+      <h1 class="display xl" data-split>Entrez. <em>La journée vous guide.</em></h1>
+      <p class="lede">Une visite filmée, comme un architecte présenterait son lieu : la rue, le seuil, les quatre heures, les cabines, et jusqu'à la caisse. Faites défiler, ou lancez la visite guidée.</p>
     </section>
-    <section class="ouv" id="ouverture" aria-label="L'ouverture de la Maison">
-      <div class="o-stage">
-        ${frames.map((f, i) => `<figure class="o-frame" data-i="${i}">${im(f.img, f.t)}</figure>`).join('')}
-        ${frames.map((f, i) => `<div class="o-cap" data-i="${i}"><p class="mono">${pad2(i + 1)} / ${pad2(frames.length)}</p><p class="display l">${f.t}</p><p class="lede" style="color:rgba(246,240,230,.9)">${f.text}</p></div>`).join('')}
+    <section class="film" id="ouverture" aria-label="Visite filmée de la Maison des Heures">
+      <div class="fm-stage">
+        <div class="fm-3d"></div>
+        <div class="fm-shade" aria-hidden="true"></div>
+        <div class="fm-top">
+          <p class="mono fm-count"><b>01</b> / ${pad2(FILM.length)}</p>
+          <div class="fm-hours" role="group" aria-label="La lumière de la Maison">${HOURS3D.map(([k, h]) => `<button type="button" data-h3d="${k}" class="${k === n.m ? 'on' : ''}" aria-pressed="${k === n.m}"><span class="zh">${MOMENTS[k].zh}</span>${h}</button>`).join('')}</div>
+        </div>
+        <div class="fm-caps">${FILM.map((c, i) => `<article class="fm-cap${i ? '' : ' on'}" data-i="${i}">
+          <p class="eyebrow"><span class="zh">${c.zh}</span> ${pad2(i + 1)} · ${c.z}</p>
+          <h2 class="fm-t">${c.t}</h2>
+          <p class="fm-see">${c.see.replace('le terme en cours', `le terme en cours, ${t.cur[0]} (${t.cur[1].toLowerCase()})`)}</p>
+          <dl class="fm-why">${c.why.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+        </article>`).join('')}</div>
+        <ol class="fm-rail" aria-label="Les plans de la visite">${FILM.map((c, i) => `<li><button type="button" data-ch="${i}" class="${i ? '' : 'on'}" aria-label="${pad2(i + 1)} · ${esc(c.t)}"><span class="zh">${c.zh}</span><em>${c.t}</em></button></li>`).join('')}</ol>
+        <div class="fm-ctl"><button type="button" class="btn light fm-play" aria-pressed="false"><span class="fm-ic" aria-hidden="true"></span><span class="fm-pl">Visite guidée</span></button><span class="mono fm-hint">Faites défiler pour avancer</span></div>
+        <div class="fm-bar" aria-hidden="true"><i></i></div>
+        <div class="fm-off" hidden><p class="h3">La visite 3D demande WebGL.</p><p class="muted">Ce navigateur ne l'active pas. Le plan et les explications restent lisibles ci-dessous.</p></div>
       </div>
     </section>
+
+    <section class="sec wrap">
+      <div class="stack" style="gap:34px">
+        <div class="stack" style="gap:14px;max-width:820px"><p class="eyebrow">Pourquoi ce lieu</p><h2 class="h2" data-split>Une boutique qui <em>raconte l'heure</em>, pas un rayon de plus.</h2></div>
+        <div class="why4">
+          <div><span class="brush">时</span><p class="h3">Le plan est une horloge</p><p class="muted">On entre au sud et l'on tourne avec le soleil. La promesse 顺时而美 ne s'explique pas : elle se traverse. Le professeur, comme la cliente, comprend la marque en marchant.</p></div>
+          <div><span class="brush">漆</span><p class="h3">La marque par la matière</p><p class="muted">Aucun logo lumineux. Laque cinabre, porcelaine céladon, laiton, papier : les mêmes matières que sur nos flacons, nos coffrets et chez nos partenaires. La mémoire fait le reste.</p></div>
+          <div><span class="brush">雨</span><p class="h3">Dessinée pour Lin Xiaoyu</p><p class="muted">29 ans, cheffe de produit à Hangzhou, réunions dès 9 h, écrans jusqu'à 1 h. Dix minutes à midi, un diagnostic le samedi, un rituel du soir : chaque zone répond à un moment de sa journée.</p></div>
+          <div><span class="brush">回</span><p class="h3">On y revient</p><p class="muted">La niche change tous les quinze jours, la recharge se fait sur place, le soin change à chaque terme, le Carnet se renouvelle. La boutique recrute les membres du Cercle, qui font 60 % des ventes à trois ans.</p></div>
+        </div>
+        <div class="kfacts">
+          <div><b>280 m²</b><span>la Maison de Shanghai</span></div>
+          <div><b>13</b><span>plans, un parcours</span></div>
+          <div><b>15 min</b><span>de diagnostic offert</span></div>
+          <div><b>24</b><span>niches, une par terme</span></div>
+          <div><b>−30 %</b><span>sur chaque recharge</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec wrap formats-sec">
+      <div class="stack" style="gap:34px">
+        <div class="stack" style="gap:14px;max-width:860px"><p class="eyebrow">Trois formats, un seul code</p><h2 class="h2" data-split>En Chine, la Maison entière. À Paris, <em>une galerie</em>. Ailleurs, <em>un comptoir</em>.</h2><p class="body-t muted">Le cadran, la laque, le sceau et l'heure du moment se retrouvent partout. Ce qui change, c'est la surface, et ce que chaque ville attend de nous. La zone de l'heure actuelle est surlignée sur chaque plan.</p></div>
+        <div class="formats">
+          <article>
+            <figure class="fplan">${planSVG('chine', n.m)}</figure>
+            <p class="eyebrow">Chine · 2027 – 2028</p><p class="h3">La Maison des Heures</p>
+            <p class="mono muted">Shanghai (Anfu Lu), Hangzhou, Chengdu · 280 m²</p>
+            <p>La version complète : rotonde et cadran, quatre alcôves, cabines, salon du diagnostic, fontaine à recharges.</p>
+            <dl><dt>Pourquoi</dt><dd>En Chine, on cherche sur Xiaohongshu, on achète sur Tmall ou Douyin et l'on vient en boutique pour sentir et toucher. La Maison est ce troisième temps : elle donne l'expérience et produit les images que la cliente partage. Hangzhou est la ville de Lin.</dd>
+            <dt>Sur place</dt><dd>Le chinois d'abord, rendez-vous par mini-programme WeChat, paiement WeChat Pay et Alipay à la table du sceau, lives Douyin tournés dans la rotonde.</dd></dl>
+          </article>
+          <article>
+            <figure class="fplan">${planSVG('paris', n.m)}</figure>
+            <p class="eyebrow">Paris · 2030 – 2032</p><p class="h3">La Maison de Saint-Germain</p>
+            <p class="mono muted">Galeries Lafayette, puis Saint-Germain-des-Prés · 120 m²</p>
+            <p>La version galerie : une cour de pierre de Paris, l'oculus au-dessus d'une table-cadran, les quatre heures en quatre vitrines murales, une seule cabine.</p>
+            <dl><dt>Pourquoi</dt><dd>Paris valide le prestige et renforce l'image en Chine : les visiteuses chinoises la photographient, et c'est à Paris que L'Oréal est né. Ici, la culture chinoise du temps est inconnue : il faut plus de récit et moins de références.</dd>
+            <dt>Sur place</dt><dd>Le français d'abord, l'heure chinoise expliquée dès l'entrée, et une programmation d'expositions d'artisans de Jingdezhen.</dd></dl>
+          </article>
+          <article>
+            <figure class="fplan">${planSVG('comptoir', n.m)}</figure>
+            <p class="eyebrow">Ailleurs · dès 2027</p><p class="h3">Les Comptoirs du Temps</p>
+            <p class="mono muted">60 comptoirs en grands magasins et à Hainan, puis Hong Kong, Singapour, Kuala Lumpur, Dubaï, Londres · 12 à 20 m²</p>
+            <p>La version condensée : un comptoir rond, le cadran au centre, quatre tiroirs laqués, un par heure. Le tiroir de l'heure en cours est ouvert : le comptoir change avec la journée.</p>
+            <dl><dt>Pourquoi</dt><dd>C'est le réseau qui fait le chiffre : 300 k€ par comptoir et par an, au lieu d'un réseau dispersé à 32 k€. En duty free, on rencontre la cliente quand elle a du temps. On commence par les pays qui partagent cette culture du temps.</dd>
+            <dt>Sur place</dt><dd>Un seul objet reconnaissable de loin, le cadran laqué, pour exister entre deux marques sans logo géant. Diagnostic express en cinq minutes.</dd></dl>
+          </article>
+        </div>
+        <p class="mono muted" style="font-size:12px">Ne change jamais : la laque cinabre, le céladon, le laiton, l'odeur d'armoise et de santal, le cadran des douze heures, le sceau.</p>
+      </div>
+    </section>
+
     <section class="sec wrap"><div class="stack" style="gap:34px">
       <div class="stack" style="gap:14px"><p class="eyebrow">En Maison</p><h2 class="h2" data-split>Quatre services, <em>à l'heure</em>.</h2></div>
       <div class="services">
@@ -617,10 +795,11 @@
     current = r;
   }
   function killAnims() {
+    if (filmKill) { filmKill(); filmKill = null; }
     if (ST) ST.getAll().forEach((t) => t.kill());
     if (G) G.globalTimeline.getChildren(false, true, true).forEach((t) => t.kill());
     $('.peek')?.classList.remove('on');
-    $('.nav').classList.remove('in-j');
+    $('.nav').classList.remove('in-j', 'in-film');
   }
 
   let busy = false, suppress = false, pending = null;
@@ -689,7 +868,8 @@
     const root = $('#view');
     bindPage(r, root);
     $$('#view img').forEach((img) => { if (!img.complete) img.addEventListener('load', refreshSoon, { once: true }); });
-    if (!ANIM) { $('.ouv', root)?.classList.add('static'); navState(); return; }
+    film(root);
+    if (!ANIM) { navState(); return; }
     // titres découpés
     $$('[data-split]', root).forEach((el) => {
       split(el);
@@ -735,7 +915,6 @@
       G.to($('.mh-brush', mh), { yPercent: 16, ease: 'none', scrollTrigger: { trigger: mh, start: 'top top', end: 'bottom top', scrub: true } });
     }
     journee(root);
-    ouverture(root);
     const nm = $('.next-m .brush', root);
     if (nm) G.from(nm, { yPercent: 30, opacity: 0, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: nm, start: 'top 90%', once: true } });
     const fw = $('.f-word', root);
@@ -796,28 +975,109 @@
     });
   }
 
-  function ouverture(root) {
-    const sec = $('.ouv', root);
+  /* la visite filmée : chargement de three.js à la demande, défilement = caméra */
+  const loadedJS = {};
+  function loadJS(u) {
+    return loadedJS[u] || (loadedJS[u] = new Promise((res, rej) => {
+      const s = document.createElement('script'); s.src = u; s.async = false;
+      s.onload = res; s.onerror = () => { delete loadedJS[u]; rej(new Error(u)); };
+      document.head.appendChild(s);
+    }));
+  }
+  async function need3D() {
+    const cdn = 'https://cdn.jsdelivr.net/npm/three@0.147.0/';
+    if (!window.THREE) await loadJS(cdn + 'build/three.min.js');
+    if (!window.THREE.RoomEnvironment) await loadJS(cdn + 'examples/js/environments/RoomEnvironment.js');
+    if (!window.YSMaison) await loadJS('maison3d.js?v=1790783495');
+  }
+  let filmKill = null;
+  function film(root) {
+    const sec = $('.film', root);
     if (!sec) return;
-    const frames = $$('.o-frame', sec), caps = $$('.o-cap', sec);
-    if (!frames.length) return;
-    caps.forEach((c, i) => { if (i) G.set(c, { autoAlpha: 0, y: 30 }); });
-    frames.forEach((f, i) => { if (i) G.set(f, { autoAlpha: 0 }); });
-    const tl = G.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: sec, start: 'top top', end: () => '+=' + window.innerHeight * frames.length, pin: $('.o-stage', sec), scrub: .9, anticipatePin: 1 } });
-    tl.to({}, { duration: .4 });
-    frames.forEach((f, i) => {
-      if (i === frames.length - 1) return;
-      const g = frames[i + 1];
-      const push = i === 0 ? 2.1 : 1.35;
-      tl.addLabel('o' + i)
-        .to($('img', f), { scale: push, transformOrigin: i === 0 ? '50% 68%' : '50% 50%', duration: 1 }, 'o' + i)
-        .to(f, { autoAlpha: 0, duration: .5 }, `o${i}+=.5`)
-        .fromTo(g, { autoAlpha: 0 }, { autoAlpha: 1, duration: .5 }, `o${i}+=.45`)
-        .fromTo($('img', g), { scale: 1.2 }, { scale: 1, duration: .9 }, `o${i}+=.45`)
-        .to(caps[i], { autoAlpha: 0, y: -30, duration: .35 }, 'o' + i)
-        .to(caps[i + 1], { autoAlpha: 1, y: 0, duration: .45 }, `o${i}+=.6`)
-        .to({}, { duration: .5 });
-    });
+    const stage = $('.fm-stage', sec), host = $('.fm-3d', sec);
+    const caps = $$('.fm-cap', sec), rail = $$('.fm-rail button', sec), cnt = $('.fm-count b', sec), bar = $('.fm-bar i', sec);
+    const playBtn = $('.fm-play', sec), playLbl = $('.fm-pl', sec);
+    const N = FILM.length, SEG = N - 1, TAIL = .6, K = SEG / (SEG + TAIL);
+    let cur = 0, fp = 0, ready = false, dead = false, st = null, auto = 0, io = null;
+    const t = term();
+    const setCap = (i) => {
+      if (i === cur) return; cur = i;
+      caps.forEach((c, j) => c.classList.toggle('on', j === i));
+      rail.forEach((b, j) => { b.classList.toggle('on', j === i); b.setAttribute('aria-current', j === i ? 'step' : 'false'); });
+      cnt.textContent = pad2(i + 1);
+    };
+    // le texte change quand la caméra arrive (elle reste immobile au début de chaque segment)
+    const capAt = (p) => { const s = p * SEG, i = Math.floor(s), f = s - i; return Math.min(N - 1, f > .74 ? i + 1 : i); };
+    const update = (p) => { fp = p; if (ready) window.YSMaison.setProgress(p); setCap(capAt(p)); bar.style.transform = `scaleX(${p})`; };
+    const pinned = ANIM;
+    if (pinned) {
+      sec.classList.add('pinned');
+      st = ST.create({ trigger: sec, start: 'top top', end: () => '+=' + window.innerHeight * (SEG + TAIL), pin: stage, anticipatePin: 1, onUpdate: (s) => update(Math.min(1, s.progress / K)), onToggle: (s) => $('.nav').classList.toggle('in-film', s.isActive) });
+    }
+    const yFor = (i) => st.start + Math.min(1, ((i + (i ? .12 : 0)) / SEG)) * K * (st.end - st.start);
+    const goCh = (i) => {
+      stopAuto();
+      if (!pinned) { update(i / SEG); return; }
+      const y = yFor(i), from = lenis ? lenis.scroll : window.scrollY;
+      if (lenis) lenis.scrollTo(y, { duration: Math.min(4.5, 1.2 + Math.abs(y - from) / window.innerHeight * .35), easing: (x) => 1 - Math.pow(1 - x, 3) });
+      else window.scrollTo({ top: y, behavior: 'smooth' });
+    };
+    // visite guidée : défilement automatique, 8,5 s par plan (3 s d'arrêt, 5,5 s de vol)
+    let last = 0, y0 = 0;
+    const setScroll = (y) => { if (lenis) lenis.scrollTo(y, { immediate: true, force: true }); else window.scrollTo(0, y); };
+    const stepAuto = (ts) => {
+      if (!auto) return;
+      const dt = Math.min(.05, (ts - (last || ts)) / 1000); last = ts;
+      if (pinned) {
+        const speed = (st.end - st.start) * K / SEG / 8.5;
+        y0 += speed * dt; setScroll(y0);
+        if (y0 >= st.end - 2) { stopAuto(); return; }
+      } else {
+        const np = Math.min(1, fp + dt / (8.5 * SEG)); update(np);
+        if (np >= 1) { stopAuto(); return; }
+      }
+      auto = requestAnimationFrame(stepAuto);
+    };
+    function startAuto() {
+      if (auto) return;
+      if (pinned) {
+        const y = lenis ? lenis.scroll : window.scrollY;
+        y0 = (y < st.start - 2 || y >= st.end - 4) ? st.start : y;
+        setScroll(y0);
+      } else if (fp >= 1) update(0);
+      last = 0; auto = requestAnimationFrame(stepAuto);
+      playBtn.setAttribute('aria-pressed', 'true'); playLbl.textContent = 'Pause'; sec.classList.add('auto');
+    }
+    function stopAuto() {
+      if (!auto) return;
+      cancelAnimationFrame(auto); auto = 0;
+      playBtn.setAttribute('aria-pressed', 'false'); playLbl.textContent = fp >= .999 ? 'Revoir la visite' : 'Reprendre la visite'; sec.classList.remove('auto');
+    }
+    const userStop = (e) => { if (e.type === 'keydown' && (e.target.closest && e.target.closest('.film button'))) return; stopAuto(); };
+    ['wheel', 'touchstart', 'keydown'].forEach((ev) => window.addEventListener(ev, userStop, { passive: true }));
+    playBtn.addEventListener('click', () => (auto ? stopAuto() : startAuto()));
+    rail.forEach((b) => b.addEventListener('click', () => goCh(+b.dataset.ch)));
+    $$('[data-h3d]', sec).forEach((b) => b.addEventListener('click', () => {
+      $$('[data-h3d]', sec).forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b); });
+      if (ready) window.YSMaison.setHour(b.dataset.h3d);
+    }));
+    filmKill = () => {
+      dead = true; stopAuto();
+      ['wheel', 'touchstart', 'keydown'].forEach((ev) => window.removeEventListener(ev, userStop));
+      if (io) io.disconnect();
+      if (window.YSMaison) window.YSMaison.destroy();
+    };
+    // la scène
+    need3D().then(() => {
+      if (dead) return;
+      window.YSToday = t.i; window.YSTodayZh = t.cur[0];
+      const hour = ($('[data-h3d].on', sec) || {}).dataset?.h3d || now().m;
+      const ok = window.YSMaison.init(host, { hour, imgBase: 'img/' });
+      if (!ok) { $('.fm-off', sec).hidden = false; sec.classList.add('no3d'); return; }
+      ready = true; window.YSMaison.setProgress(fp, true);
+      requestAnimationFrame(() => sec.classList.add('ready'));
+      if ('IntersectionObserver' in window) { io = new IntersectionObserver(([e]) => window.YSMaison.setActive(e.isIntersecting), { rootMargin: '200px 0px' }); io.observe(sec); }
+    }).catch(() => { if (!dead) { $('.fm-off', sec).hidden = false; sec.classList.add('no3d'); } });
   }
 
   /* événements propres à chaque page */
@@ -882,7 +1142,7 @@
     const over = $('#view > [data-over]:first-child');
     const overImg = over && y < over.offsetHeight - 70;
     nav.classList.toggle('over-img', !!overImg);
-    nav.classList.toggle('solid', !overImg && y > 30 && !nav.classList.contains('in-j'));
+    nav.classList.toggle('solid', !overImg && y > 30 && !nav.classList.contains('in-j') && !nav.classList.contains('in-film'));
     const menuOpen = !$('#menu').hidden;
     nav.classList.toggle('hide', !menuOpen && y > 240 && y > lastY + 2);
     if (y < lastY - 2 || y < 240) nav.classList.remove('hide');
@@ -965,22 +1225,6 @@
   }
   function enter(first) {
     const g = $('#gate');
-    const door = $('#door');
-    if (G && !RM && door && has('amb_6')) {
-      door.hidden = false;
-      $('img', door).src = src('amb_6');
-      $('.g-enter', g).disabled = true;
-      let fin = false;
-      const finish = () => { if (fin) return; fin = true; veilIn(MOMENTS[now().m].zh).then(() => { door.hidden = true; g.classList.add('gone'); lockScroll(false); mount(first); if (first.arg === 'ouverture') setTimeout(() => scrollToEl($('#ouverture')), 80); return veilOut(); }); };
-      setTimeout(finish, 4200);
-      const tl = G.timeline({ onComplete: finish });
-      tl.to($$('.g-mid, .g-top, .g-bot', g), { opacity: 0, y: -20, duration: .6, ease: 'expo.in', stagger: .05 })
-        .fromTo(door, { opacity: 0 }, { opacity: 1, duration: .9, ease: 'sine.out' }, '-=.2')
-        .fromTo($('img', door), { scale: 1.05 }, { scale: 2.6, duration: 2.1, ease: 'expo.in', transformOrigin: '50% 68%' }, '<')
-        .to($('img', door), { filter: 'blur(10px) brightness(1.3)', duration: .7, ease: 'sine.in' }, '-=.7');
-      return;
-    }
-    const done = () => { g.classList.add('gone'); g.setAttribute('aria-hidden', 'true'); lockScroll(false); mount(first); if (first.arg === 'ouverture') setTimeout(() => scrollToEl($('#ouverture')), 80); };
     if (!G || RM) { done(); return; }
     veilIn(MOMENTS[now().m].zh).then(() => { g.classList.add('gone'); lockScroll(false); mount(first); if (first.arg === 'ouverture') setTimeout(() => scrollToEl($('#ouverture')), 80); return veilOut(); });
   }
@@ -991,7 +1235,6 @@
     const r = parse(location.hash);
     render(r);
     lockScroll(true);
-    initGrain();
     initCursor();
     tick(); setInterval(tick, 20000);
     $('.n-heures').setAttribute('href', '#heure-' + now().m);
@@ -1006,6 +1249,8 @@
         return;
       }
       if (e.target.closest('[data-open-bag]')) { e.preventDefault(); openBag(); return; }
+      const hr = e.target.closest('[data-hour]');
+      if (hr) { heroAt(+hr.dataset.hour); return; }
       const qz = e.target.closest('[data-quiz]');
       if (qz) {
         quiz[qz.dataset.quiz] = qz.dataset.val;
